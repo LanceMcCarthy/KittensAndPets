@@ -6,6 +6,9 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:converters="using:KittensAndPets.Converters"
+      xmlns:grid="using:Telerik.UI.Xaml.Controls.Grid"
+      xmlns:core="using:Telerik.Data.Core"
+      xmlns:models="using:KittensAndPets.Models"
       mc:Ignorable="d"
       DataContext="{StaticResource ViewModel}">
 
@@ -20,23 +23,25 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <Grid x:Name="SearchResultsPanel"
+        <!--<Grid x:Name="SearchResultsPanel"
               Grid.Row="1">
-
-            <TextBlock Text="NO RESULTS"
+            <TextBlock Text="No search results, enter a search term below to perform a search"
+                       Margin="20"
+                       TextWrapping="Wrap"
                        Visibility="{Binding SearchResults, Converter={StaticResource CollectionVisibilityConverter}}"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center" />
 
             <ListView x:Name="ResultsListView"
                       ItemsSource="{Binding SearchResults}"
-                      SelectedItem="{Binding SelectedSearchResult}"
+                      SelectedItem="{Binding SelectedSearchResult, Mode=TwoWay}"
                       SelectionMode="Single">
                 <ListView.Header>
-                    <StackPanel>
+                    <Grid>
                         <TextBlock Text="Search Results"
-                                   HorizontalAlignment="Center" />
-                    </StackPanel>
+                                   HorizontalAlignment="Center"
+                                   Style="{StaticResource SubheaderTextBlockStyle}" />
+                    </Grid>
                 </ListView.Header>
                 <ListView.ItemTemplate>
                     <DataTemplate>
@@ -51,9 +56,78 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-        </Grid>
+        </Grid>-->
 
-        <Grid x:Name="SocialGrid"
+        <grid:RadDataGrid ItemsSource="{Binding SearchResults}"
+                          SelectedItem="{Binding SelectedSearchResult, Mode=TwoWay}"
+                          AutoGenerateColumns="False"
+                          SelectionMode="Single"
+                          Grid.Row="1"
+                          Grid.ColumnSpan="2">
+            <grid:RadDataGrid.Columns>
+                <grid:DataGridTemplateColumn Header="Title">
+                    <grid:DataGridTemplateColumn.CellContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="10,0,0,5">
+                                <TextBlock Text="{Binding Title}"
+                                           Style="{StaticResource SubtitleTextBlockStyle}" />
+                                <TextBlock Text="{Binding Summary}"
+                                           Style="{StaticResource BodyTextBlockStyle}"
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </grid:DataGridTemplateColumn.CellContentTemplate>
+                    <grid:DataGridTemplateColumn.SortDescriptor>
+                        <core:PropertySortDescriptor PropertyName="Title" />
+                    </grid:DataGridTemplateColumn.SortDescriptor>
+                    <grid:DataGridTemplateColumn.GroupDescriptor>
+                        <!--<core:PropertyGroupDescriptor PropertyName="Title" />-->
+                        <core:DelegateGroupDescriptor>
+                            <core:DelegateGroupDescriptor.KeyLookup>
+                                <models:DomainGroupDescriptor />
+                            </core:DelegateGroupDescriptor.KeyLookup>
+                        </core:DelegateGroupDescriptor>
+                    </grid:DataGridTemplateColumn.GroupDescriptor>
+                </grid:DataGridTemplateColumn>
+                <grid:DataGridTemplateColumn Header="Published">
+                    <grid:DataGridTemplateColumn.CellContentTemplate>
+                        <DataTemplate>
+                            <Grid Margin="10,0,0,5">
+                                <TextBlock Text="{Binding Published}"
+                                           VerticalAlignment="Center" />
+                            </Grid>
+                        </DataTemplate>
+                    </grid:DataGridTemplateColumn.CellContentTemplate>
+                    <grid:DataGridTemplateColumn.GroupDescriptor>
+                        <core:DelegateGroupDescriptor>
+                            <core:DelegateGroupDescriptor.KeyLookup>
+                                <models:PublishedGroupDescriptor />
+                            </core:DelegateGroupDescriptor.KeyLookup>
+                        </core:DelegateGroupDescriptor>
+                    </grid:DataGridTemplateColumn.GroupDescriptor>
+                </grid:DataGridTemplateColumn>
+                <grid:DataGridTemplateColumn Header="Link">
+                    <grid:DataGridTemplateColumn.CellContentTemplate>
+                        <DataTemplate>
+                            <Grid Margin="10,0,0,5">
+                                <HyperlinkButton Content="{Binding Link}"
+                                                 NavigateUri="{Binding Link}"
+                                                 VerticalAlignment="Center" />
+                            </Grid>
+                        </DataTemplate>
+                    </grid:DataGridTemplateColumn.CellContentTemplate>
+                    <grid:DataGridTemplateColumn.GroupDescriptor>
+                        <core:DelegateGroupDescriptor>
+                            <core:DelegateGroupDescriptor.KeyLookup>
+                                <models:DomainGroupDescriptor />
+                            </core:DelegateGroupDescriptor.KeyLookup>
+                        </core:DelegateGroupDescriptor>
+                    </grid:DataGridTemplateColumn.GroupDescriptor>
+                </grid:DataGridTemplateColumn>
+            </grid:RadDataGrid.Columns>
+        </grid:RadDataGrid>
+
+        <!--<Grid x:Name="SocialGrid"
               Grid.Row="1"
               Grid.Column="1">
 
@@ -65,28 +139,26 @@
             <ListView x:Name="TweetsListView"
                       Visibility="{Binding User, Converter={StaticResource NullToVisibilityConverter}}"
                       ItemsSource="{Binding Tweets}"
-                      SelectedItem="{Binding SelectedTweet}"
+                      SelectedItem="{Binding SelectedTweet, Mode=TwoWay}"
                       SelectionMode="Single"
                       ItemContainerStyle="{StaticResource WideListViewItemStyle}">
                 <ListView.Header>
-                    <Grid Padding="10">
-                        <StackPanel>
+                    <Grid>
+                        <StackPanel Orientation="Horizontal"
+                                       HorizontalAlignment="Center">
                             <TextBlock Text="Recent Tweets"
-                                       HorizontalAlignment="Center" />
-                            <!--<StackPanel Orientation="Horizontal">
-                                <Image Source="{Binding User.ProfileImageUrl}"
-                                       Width="50"
-                                       Height="50" />
-                                <TextBlock Text="{Binding User.Name}"
-                                           VerticalAlignment="Center"
-                                           Margin="20,0,0,0" />
-                            </StackPanel>-->
+                                       Style="{StaticResource SubheaderTextBlockStyle}" />
+                            <Button Margin="10,0,0,0"
+                                    Padding="5">
+                                <SymbolIcon Symbol="Refresh"/>
+                            </Button>
+                            
                         </StackPanel>
                     </Grid>
                 </ListView.Header>
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <Border Margin="0,0,10,10"
+                        <Border Margin="0,5,10,5"
                                 Padding="10"
                                 Background="White"
                                 BorderBrush="#FFCCCCCC"
@@ -145,41 +217,45 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-        </Grid>
+        </Grid>-->
 
         <CommandBar Grid.Row="2"
                     HorizontalContentAlignment="Stretch"
                     VerticalContentAlignment="Stretch"
-                    Grid.ColumnSpan="2">
+                    Grid.ColumnSpan="2"
+                    Grid.Column="0">
             <CommandBar.Content>
                 <Grid>
                     <Grid.Resources>
                         <converters:IsEnabledToBrushConverter x:Key="BrushConverter" />
                     </Grid.Resources>
                     <TextBox x:Name="SearchBox"
-                             Text="{Binding SearchTerm, Mode=TwoWay}"
+                             Text="{Binding SearchTerm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                              PlaceholderText="enter search term"
                              BorderBrush="{Binding IsSearchEnabled, Converter={StaticResource BrushConverter}}"
                              VerticalAlignment="Top"
                              Width="200"
-                             Margin="8,8,0,0" />
+                             Margin="8,8,0,0"
+                             KeyDown="{x:Bind ViewModel.SearchBox_OnKeyDown}" />
                 </Grid>
             </CommandBar.Content>
 
-            <AppBarButton Label="Log out"
+            <!--<AppBarButton Label="Log out"
+                          Command="{Binding LogoutCommand}"
                           Visibility="{Binding User, Converter={StaticResource NullToVisibilityConverter}}"
-                          Icon="BlockContact" />
+                          Icon="BlockContact" />-->
 
-            <AppBarSeparator />
+            <!--<AppBarSeparator Visibility="{Binding User, Converter={StaticResource NullToVisibilityConverter}}"/>-->
+
+            <AppBarButton Icon="Mail"
+                          Label="Tweet"
+                          Command="{Binding ShareResultCommand}"
+                          Visibility="{Binding SelectedSearchResult, Converter={StaticResource NullToVisibilityConverter}}" />
 
             <AppBarButton Icon="Find"
                           Command="{Binding SearchCommand}"
                           IsEnabled="{Binding IsSearchEnabled}"
                           Label="Search" />
-
-            <!--<CommandBar.SecondaryCommands>
-                
-            </CommandBar.SecondaryCommands>-->
         </CommandBar>
 
         <Grid x:Name="BusyOverlayGrid"
@@ -201,3 +277,18 @@
         </Grid>
     </Grid>
 </Page>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

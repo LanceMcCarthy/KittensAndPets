@@ -48,7 +48,6 @@ namespace KittensAndPets.BackgroundTasks
                     return;
                 }
 
-
                 // -------- Check search term is valid --------
 
                 string query = "";
@@ -118,8 +117,14 @@ namespace KittensAndPets.BackgroundTasks
                         // If we've already tweeted this, skip this loop
                         if(recentTweet.Text == bingResult.Title)
                             continue;
-                        
-                        await TwitterService.Instance.TweetStatusAsync(bingResult.Title);
+
+                        var message = "BGTEST" + bingResult.Title;
+
+                        if (message.Length > 140)
+                            message = message.Substring(0, 137) + "...";
+
+
+                        await TwitterService.Instance.TweetStatusAsync(message);
                         newItemsCount++;
 
                         // TODO Determine if posting a tweet with a picture is viable

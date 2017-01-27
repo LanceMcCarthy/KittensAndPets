@@ -48,7 +48,7 @@ namespace KittensAndPets.Models
             {
                 Name = $"Kittens and Pets",
                 ScreenName = "@Kittenz",
-                ProfileImageUrl = "https://pbs.twimg.com/profile_images/812868055265148928/xQ8kieAU_400x400.jpg"
+                ProfileImageUrl = "/Assets/TwitterLogo.png"
             };
         }
     }

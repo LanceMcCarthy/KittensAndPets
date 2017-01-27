@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.Storage;
+using Windows.System;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Navigation;
 using KittensAndPets.Models;
 using KittensAndPets.Models.Common;
@@ -36,6 +39,8 @@ namespace KittensAndPets.ViewModels
         private DelegateCommand searchCommand;
         private DelegateCommand loginCommand;
         private DelegateCommand logoutCommand;
+        private DelegateCommand shareResultCommand;
+        private DelegateCommand refreshTweetsCommand;
 
         #endregion
 
@@ -85,6 +90,7 @@ namespace KittensAndPets.ViewModels
             set
             {
                 IsSearchEnabled = !string.IsNullOrEmpty(value);
+
                 Set(ref searchTerm, value);
             }
         }
@@ -136,8 +142,6 @@ namespace KittensAndPets.ViewModels
 
         public DelegateCommand LogoutCommand => logoutCommand ?? (logoutCommand = new DelegateCommand(async () =>
         {
-            
-
             bool shouldLogout = await DispatcherHelper.ExecuteOnUIThreadAsync<bool>(async () =>
             {
                 var md = new MessageDialog("Are you sure you want to log out?", "Log Out");
@@ -152,6 +156,37 @@ namespace KittensAndPets.ViewModels
 
             if (shouldLogout)
                 LogOutOfTwitter();
+        }));
+
+        public DelegateCommand ShareResultCommand
+        {
+            get { return shareResultCommand ?? (shareResultCommand = new DelegateCommand(async () =>
+            {
+                if (User == null || SelectedSearchResult == null)
+                    return;
+
+                var message = "BGTEST" + SelectedSearchResult.Title;
+
+                if (message.Length > 140)
+                {
+                    message = message.Substring(0, 137) + "...";
+                }
+
+                await TwitterService.Instance.TweetStatusAsync(message);
+            })); }
+        }
+
+        public DelegateCommand RefreshTweetsCommand => refreshTweetsCommand ?? (refreshTweetsCommand = new DelegateCommand(async () =>
+        {
+            if (User == null)
+                return;
+
+            var recentTweets = await TwitterService.Instance.GetUserTimeLineAsync(User.ScreenName, 50);
+
+            if (recentTweets == null)
+                return;
+
+            Tweets = new ObservableCollection<Tweet>(recentTweets);
         }));
 
         #endregion
@@ -228,12 +263,8 @@ namespace KittensAndPets.ViewModels
 
                 var recentTweets = await TwitterService.Instance.GetUserTimeLineAsync(User.ScreenName, 50);
 
-                foreach (var tweet in recentTweets)
-                {
-                    if(!Tweets.Contains(tweet))
-                        Tweets.Add(tweet);
-                }
-
+                Tweets = new ObservableCollection<Tweet>(recentTweets);
+                
                 return true;
             }
             catch (Exception ex)
@@ -293,7 +324,17 @@ namespace KittensAndPets.ViewModels
             //return base.OnNavigatedToAsync(parameter, mode, state);
         }
 
+        public async void SearchBox_OnKeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            if (e.Key != VirtualKey.Accept && e.Key != VirtualKey.Enter)
+                return;
+
+            Debug.WriteLine($"SearchBox_OnKeyDown EnterPressed");
+
+            if(!string.IsNullOrEmpty(SearchTerm))
+                await SearchAsync(SearchTerm);
+        }
+
         #endregion
-        
     }
 }

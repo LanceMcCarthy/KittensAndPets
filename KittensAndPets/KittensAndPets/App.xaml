@@ -6,6 +6,7 @@
                      xmlns:viewModels="using:KittensAndPets.ViewModels"
                      xmlns:toolkitConverters="using:Microsoft.Toolkit.Uwp.UI.Converters"
                      xmlns:converters="using:KittensAndPets.Converters"
+                     xmlns:listView="using:Telerik.UI.Xaml.Controls.Data.ListView"
                      RequestedTheme="Light">
 
     <common:BootStrapper.Resources>
@@ -41,6 +42,74 @@
             <Setter Property="HorizontalContentAlignment"
                     Value="Stretch" />
         </Style>
+
+        <Style x:Key="WideRadListViewItemStyle"
+               TargetType="listView:RadListViewItem">
+            <Setter Property="HorizontalAlignment"
+                    Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment"
+                    Value="Stretch" />
+        </Style>
+        
+        <!-- DataTemplates -->
+        <DataTemplate x:Key="TweetTemplate">
+            <Border Margin="0,5,10,5"
+                    Padding="10"
+                    Background="White"
+                    BorderBrush="#FFCCCCCC"
+                    BorderThickness="1"
+                    CornerRadius="4">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Image Grid.RowSpan="2"
+                               Width="50"
+                               Height="50"
+                               Margin="0,0,10,0"
+                               VerticalAlignment="Top"
+                               Source="{Binding User.ProfileImageUrl}"
+                               Stretch="Uniform" />
+                        <TextBlock Grid.Column="1"
+                                   FontWeight="SemiBold"
+                                   Text="{Binding User.Name}" />
+                        <TextBlock Grid.Row="1"
+                                   Grid.Column="1"
+                                   VerticalAlignment="Top"
+                                   FontWeight="Light"
+                                   Text="{Binding User.ScreenName}" />
+                        <Image Grid.RowSpan="2"
+                               Grid.Column="2"
+                               Width="24"
+                               Height="24"
+                               VerticalAlignment="Top"
+                               Source="/Assets/TwitterLogo.png"
+                               Stretch="Uniform" />
+                    </Grid>
+                    <TextBlock Grid.Row="1"
+                               FontWeight="SemiBold"
+                               Text="{Binding Text}"
+                               TextTrimming="CharacterEllipsis"
+                               TextWrapping="WrapWholeWords" />
+                    <TextBlock Grid.Row="2"
+                               HorizontalAlignment="Right"
+                               FontWeight="ExtraLight"
+                               Text="{Binding CreationDate}" />
+                </Grid>
+            </Border>
+        </DataTemplate>
 
     </common:BootStrapper.Resources>
 

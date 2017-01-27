@@ -1,12 +1,15 @@
-﻿<Page
-    x:Class="KittensAndPets.Views.OptionsPage"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:KittensAndPets.Views"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:viewModels="using:KittensAndPets.ViewModels"
-    mc:Ignorable="d">
+﻿<Page x:Class="KittensAndPets.Views.OptionsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="using:KittensAndPets.Views"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:viewModels="using:KittensAndPets.ViewModels"
+      xmlns:data="using:Telerik.UI.Xaml.Controls.Data"
+      xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+      xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+      xmlns:listView="using:Telerik.UI.Xaml.Controls.Data.ListView"
+      mc:Ignorable="d">
 
     <Page.DataContext>
         <viewModels:OptionsViewModel x:Name="ViewModel" />
@@ -14,6 +17,7 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition />
@@ -47,7 +51,7 @@
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
                     Grid.Row="2"
-                    Margin="20">
+                    Margin="10">
             <ToggleSwitch Header="Background Search &amp; Tweet"
                           IsOn="{Binding IsBackgroundTaskEnabled, Mode=TwoWay}" />
             <ComboBox x:Name="FrequencyComboBox"
@@ -65,9 +69,6 @@
                 </ComboBox.HeaderTemplate>
             </ComboBox>
 
-        </StackPanel>
-
-        <StackPanel Grid.Row="3">
             <TextBlock Text="{Binding LastTaskStatusMessage}"
                        TextWrapping="Wrap"
                        Visibility="{Binding LastTaskStatusMessage, Converter={StaticResource NullToVisibilityConverter}}"
@@ -75,9 +76,143 @@
             <Button x:Name="CheckStatusButton"
                     Content="check background task status"
                     Click="{x:Bind ViewModel.GetStatusButton_OnClick}"
-                    Margin="10" />
-
+                    Margin="0,10" />
         </StackPanel>
+
+        <Grid x:Name="SocialOptionsPanel"
+              DataContext="{StaticResource ViewModel}"
+              Grid.Row="3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <StackPanel Margin="10,0,10,10">
+                <TextBlock Text="Twitter Account" Style="{StaticResource TitleTextBlockStyle}"/>
+                <TextBlock Text="{Binding User.ScreenName}"
+                           VerticalAlignment="Center"
+                           Style="{StaticResource SubtitleTextBlockStyle}"
+                           Margin="0,0,0,10" />
+                <StackPanel Orientation="Horizontal"
+                            Margin="0,0,0,10">
+                    <Button Command="{Binding RefreshTweetsCommand}"
+                            Margin="10,0,10,0" >
+                        <SymbolIcon Symbol="Refresh" />
+                    </Button>
+                    <Button Content="Log In"
+                            Command="{Binding LoginCommand}"
+                            Visibility="{Binding User, Converter={StaticResource InvertedNullToVisibilityConverter}}"
+                            Margin="10,0,10,0" />
+                    <Button Content="Log out"
+                            Command="{Binding LogoutCommand}"
+                            Visibility="{Binding User, Converter={StaticResource NullToVisibilityConverter}}"
+                            Margin="10,0,10,0" />
+                </StackPanel>
+            </StackPanel>
+
+            <!--<ListView x:Name="TweetsListView"
+                      Visibility="{Binding User, Converter={StaticResource NullToVisibilityConverter}}"
+                      ItemsSource="{Binding Tweets}"
+                      SelectedItem="{Binding SelectedTweet, Mode=TwoWay}"
+                      SelectionMode="Single"
+                      ItemContainerStyle="{StaticResource WideListViewItemStyle}"
+                      Grid.Row="1">
+                <ListView.Header>
+                    <Grid>
+                        <StackPanel Orientation="Horizontal"
+                                    Margin="12,0,0,0"
+                                    HorizontalAlignment="Left">
+                            <TextBlock Text="Recent Tweets" />
+
+
+                        </StackPanel>
+                    </Grid>
+                </ListView.Header>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Margin="0,5,10,5"
+                                Padding="10"
+                                Background="White"
+                                BorderBrush="#FFCCCCCC"
+                                BorderThickness="1"
+                                CornerRadius="4">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Image Grid.RowSpan="2"
+                                           Width="50"
+                                           Height="50"
+                                           Margin="0,0,12,0"
+                                           VerticalAlignment="Top"
+                                           Source="{Binding User.ProfileImageUrl}"
+                                           Stretch="Uniform" />
+                                    <TextBlock Grid.Column="1"
+                                               FontWeight="SemiBold"
+                                               Text="{Binding User.Name}" />
+                                    <TextBlock Grid.Row="1"
+                                               Grid.Column="1"
+                                               VerticalAlignment="Top"
+                                               FontWeight="Light"
+                                               Text="{Binding User.ScreenName}" />
+                                    <Image Grid.RowSpan="2"
+                                           Grid.Column="2"
+                                           Width="24"
+                                           Height="24"
+                                           VerticalAlignment="Top"
+                                           Source="/Assets/TwitterLogo.png"
+                                           Stretch="Uniform" />
+                                </Grid>
+                                <TextBlock Grid.Row="1"
+                                           FontWeight="SemiBold"
+                                           Text="{Binding Text}"
+                                           TextTrimming="CharacterEllipsis"
+                                           TextWrapping="WrapWholeWords" />
+                                <TextBlock Grid.Row="2"
+                                           HorizontalAlignment="Right"
+                                           FontWeight="ExtraLight"
+                                           Text="{Binding CreationDate}" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>-->
+
+            <data:RadListView Visibility="{Binding User, Converter={StaticResource NullToVisibilityConverter}}"
+                              ItemsSource="{Binding Tweets}"
+                              SelectedItem="{Binding SelectedTweet, Mode=TwoWay}"
+                              SelectionMode="Single"
+                              ItemTemplate="{StaticResource TweetTemplate}"
+                              ItemStyle="{StaticResource WideRadListViewItemStyle}"
+                              Grid.Row="1">
+                <interactivity:Interaction.Behaviors>
+                    <core:EventTriggerBehavior EventName="RefreshRequested" >
+                        <core:InvokeCommandAction Command="{Binding RefreshTweetsCommand}" />
+                    </core:EventTriggerBehavior>
+                </interactivity:Interaction.Behaviors>
+                <data:RadListView.LayoutDefinition>
+                    <listView:GridLayoutDefinition SpanCount="2" />
+                </data:RadListView.LayoutDefinition>
+                <data:RadListView.ListHeader>
+                    <Grid>
+                        <TextBlock Text="Recent Tweets (pull to refresh)"
+                                   Margin="10,0,0,0" />
+                    </Grid>
+                </data:RadListView.ListHeader>
+            </data:RadListView>
+        </Grid>
 
         <Grid x:Name="BusyOverlayGrid"
               Visibility="{Binding IsBusy}"
@@ -124,3 +259,6 @@
         </VisualStateManager.VisualStateGroups>
     </Grid>
 </Page>
+
+
+

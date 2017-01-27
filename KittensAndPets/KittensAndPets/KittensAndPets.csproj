@@ -98,6 +98,8 @@
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\IsEnabledToBrushConverter.cs" />
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
+    <Compile Include="Models\DomainGroupDescriptor.cs" />
+    <Compile Include="Models\PublishedGroupDescriptor.cs" />
     <Compile Include="Models\SampleDataService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
@@ -154,7 +156,11 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <SDKReference Include="Telerik UI For Universal Windows Platform, Version=2017.1.118.45">
+      <Name>Telerik UI For Universal Windows Platform</Name>
+    </SDKReference>
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\KittensAndPets.BackgroundTasks\KittensAndPets.BackgroundTasks.csproj">
       <Project>{cb09320e-b08a-4a13-8c3f-dc1d994c4186}</Project>
